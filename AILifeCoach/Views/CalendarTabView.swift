@@ -11,7 +11,7 @@ import CoreData
 
 struct CalendarTabView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(sortDescriptors: [SortDescriptor(\CalendarEvent.start, order: .forward)])
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \CalendarEvent.start, ascending: true)])
     private var events: FetchedResults<CalendarEvent>
     @State private var showingAddEvent = false
 

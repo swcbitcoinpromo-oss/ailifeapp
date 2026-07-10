@@ -21,8 +21,10 @@ struct InputTabView: View {
     }
 
     @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(sortDescriptors: []) private var foodLogs: FetchedResults<FoodLog>
-    @FetchRequest(sortDescriptors: []) private var workoutLogs: FetchedResults<WorkoutLog>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \FoodLog.date, ascending: false)])
+    private var foodLogs: FetchedResults<FoodLog>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \WorkoutLog.date, ascending: false)])
+    private var workoutLogs: FetchedResults<WorkoutLog>
 
     @State private var selectedDomain: Domain = .schedule
     @AppStorage("scheduleNotesDraft") private var scheduleDraft = ""
