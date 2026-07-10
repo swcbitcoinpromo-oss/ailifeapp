@@ -1,0 +1,38 @@
+name: iOS build & simulator verify
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build for iOS Simulator
+        run: |
+          xcodebuild -project AILifeCoach.xcodeproj -scheme AILifeCoach \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+
+      - name: Boot simulator, install, launch, screenshot
+        run: |
+          UDID=$(xcrun simctl create ci-phone com.apple.CoreSimulator.SimDeviceType.iPhone-15)
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          APP=$(find build/Build/Products -name "AILifeCoach.app" -type d | head -1)
+          echo "Installing $APP"
+          xcrun simctl install "$UDID" "$APP"
+          xcrun simctl launch "$UDID" com.darso.AILifeCoach
+          sleep 10
+          xcrun simctl io "$UDID" screenshot launch-calendar-tab.png
+
+      - name: Upload proof artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: simulator-proof
+          path: |
+            launch-calendar-tab.png
+            build/Build/Products/Debug-iphonesimulator/AILifeCoach.app
