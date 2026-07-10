@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21507" systemVersion="21G816" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="BriefingRecord" representedClassName="BriefingRecord" syncable="YES">
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="played" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="script" attributeType="String" defaultValueString=""/>
+        <attribute name="videoURL" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CalendarEvent" representedClassName="CalendarEvent" syncable="YES">
+        <attribute name="domain" attributeType="String" defaultValueString="general"/>
+        <attribute name="end" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="needsConfirmation" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="recurrence" optional="YES" attributeType="String"/>
+        <attribute name="source" attributeType="String" defaultValueString="manual"/>
+        <attribute name="start" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="title" attributeType="String" defaultValueString=""/>
+    </entity>
+    <entity name="CoachRecommendation" representedClassName="CoachRecommendation" syncable="YES">
+        <attribute name="coach" attributeType="String" defaultValueString=""/>
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="recommendation" attributeType="String" defaultValueString=""/>
+        <attribute name="status" attributeType="String" defaultValueString="pending"/>
+    </entity>
+    <entity name="FoodLog" representedClassName="FoodLog" syncable="YES">
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="entries" attributeType="String" defaultValueString=""/>
+        <attribute name="notes" attributeType="String" defaultValueString=""/>
+    </entity>
+    <entity name="UserProfile" representedClassName="UserProfile" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="dietaryConstraints" attributeType="String" defaultValueString=""/>
+        <attribute name="goal" attributeType="String" defaultValueString=""/>
+        <attribute name="injuryNotes" attributeType="String" defaultValueString=""/>
+        <attribute name="level" attributeType="String" defaultValueString=""/>
+        <attribute name="scheduleConstraints" attributeType="String" defaultValueString=""/>
+    </entity>
+    <entity name="WorkoutLog" representedClassName="WorkoutLog" syncable="YES">
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="exercises" attributeType="String" defaultValueString=""/>
+        <attribute name="volumeNotes" attributeType="String" defaultValueString=""/>
+    </entity>
+    <elements>
+        <element name="BriefingRecord" positionX="-63" positionY="144" width="128" height="89"/>
+        <element name="CalendarEvent" positionX="-63" positionY="-18" width="128" height="134"/>
+        <element name="CoachRecommendation" positionX="-63" positionY="117" width="128" height="89"/>
+        <element name="FoodLog" positionX="-63" positionY="63" width="128" height="74"/>
+        <element name="UserProfile" positionX="-63" positionY="-63" width="128" height="119"/>
+        <element name="WorkoutLog" positionX="-63" positionY="90" width="128" height="74"/>
+    </elements>
+</model>
