@@ -17,33 +17,38 @@ struct CalendarTabView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if events.isEmpty {
-                    EmptyCalendarView {
-                        showingAddEvent = true
-                    }
-                } else {
-                    List {
-                        ForEach(events) { event in
-                            EventRow(event: event)
+            content
+                .navigationTitle("Calendar")
+                .toolbar {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button {
+                            showingAddEvent = true
+                        } label: {
+                            Label("Add Event", systemImage: "plus")
                         }
-                        .onDelete(perform: deleteEvents)
                     }
                 }
-            }
-            .navigationTitle("Calendar")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showingAddEvent = true
-                    } label: {
-                        Label("Add Event", systemImage: "plus")
-                    }
+                .sheet(isPresented: $showingAddEvent) {
+                    AddEventSheet()
                 }
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if events.isEmpty {
+            EmptyCalendarView(onAdd: { showingAddEvent = true })
+        } else {
+            eventList
+        }
+    }
+
+    private var eventList: some View {
+        List {
+            ForEach(events, id: \.objectID) { event in
+                EventRow(event: event)
             }
-            .sheet(isPresented: $showingAddEvent) {
-                AddEventSheet()
-            }
+            .onDelete(perform: deleteEvents)
         }
     }
 
@@ -64,12 +69,12 @@ private struct EmptyCalendarView: View {
         VStack(spacing: 12) {
             Image(systemName: "calendar.badge.plus")
                 .font(.system(size: 48))
-                .foregroundStyle(.secondary)
+                .foregroundColor(.secondary)
             Text("No events yet")
                 .font(.title3.weight(.semibold))
             Text("Add events manually for now. In Phase 2, your notes parse into events automatically.")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
             Button("Add Event", action: onAdd)
@@ -84,31 +89,43 @@ private struct EmptyCalendarView: View {
 private struct EventRow: View {
     @ObservedObject var event: CalendarEvent
 
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE d MMM, HH:mm"
+        return formatter
+    }()
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text(event.title)
-                    .font(.headline)
-                if event.needsConfirmation {
-                    Text("Confirm?")
-                        .font(.caption2.weight(.semibold))
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(.yellow.opacity(0.25), in: Capsule())
-                }
-                Spacer()
-                Text(event.domain.capitalized)
-                    .font(.caption.weight(.medium))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(domainColor.opacity(0.15), in: Capsule())
-                    .foregroundStyle(domainColor)
-            }
-            Text(event.start, format: .dateTime.weekday(.wide).day().month().hour().minute())
+            titleRow
+            Text(Self.dateFormatter.string(from: event.start))
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundColor(.secondary)
         }
         .padding(.vertical, 2)
+    }
+
+    private var titleRow: some View {
+        HStack {
+            Text(event.title)
+                .font(.headline)
+            if event.needsConfirmation {
+                Text("Confirm?")
+                    .font(.caption2.weight(.semibold))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color.yellow.opacity(0.25))
+                    .clipShape(Capsule())
+            }
+            Spacer()
+            Text(event.domain.capitalized)
+                .font(.caption.weight(.medium))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(domainColor.opacity(0.15))
+                .clipShape(Capsule())
+                .foregroundColor(domainColor)
+        }
     }
 
     private var domainColor: Color {
@@ -161,21 +178,24 @@ private struct AddEventSheet: View {
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
-                        CalendarEvent.create(
-                            in: viewContext,
-                            title: trimmedTitle,
-                            start: start,
-                            end: start.addingTimeInterval(TimeInterval(durationMinutes * 60)),
-                            source: "manual",
-                            domain: domain
-                        )
-                        try? viewContext.save()
-                        dismiss()
-                    }
-                    .disabled(trimmedTitle.isEmpty)
+                    Button("Add", action: addEvent)
+                        .disabled(trimmedTitle.isEmpty)
                 }
             }
         }
+    }
+
+    private func addEvent() {
+        let end = start.addingTimeInterval(TimeInterval(durationMinutes * 60))
+        CalendarEvent.create(
+            in: viewContext,
+            title: trimmedTitle,
+            start: start,
+            end: end,
+            source: "manual",
+            domain: domain
+        )
+        try? viewContext.save()
+        dismiss()
     }
 }
